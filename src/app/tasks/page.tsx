@@ -9,16 +9,19 @@ import { Task } from "./data/schema";
 import { PageDtToolbarPropsToolbar } from "./page-dt-toolbar";
 import { Button } from "@/components/ui/button";
 import { fetchData, fetchData2 } from "./data/testdata";
+import { usePagination } from "./components/usePagination";
 
 export default function TaskPage() {
   const tableRef = useRef<DataTableHandle>(null);
   const [tableData, setTableData] = useState<Task[]>([]);
   const [testPage, setTestPage] = useState<number>(1);
 
+  const { pagination, onPaginationChange, onPageSizeChange } = usePagination();
+
   useEffect(() => {
     async function loadData() {
-      //      const data = await fetchData();
-      //      setTableData(data);
+      const data = await fetchData();
+      setTableData(data);
     }
     loadData();
   }, []);
@@ -91,7 +94,7 @@ export default function TaskPage() {
           ref={tableRef}
           DataTableToolbar={PageDtToolbarPropsToolbar}
           data={tableData}
-          columns={columns}
+          pagination={pagination}
         />
       </div>
     </>

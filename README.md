@@ -16,7 +16,11 @@ SHADCN UI 새믚 -> Tasks 그리드 샘픔
   console.log("aaa=" + table.options.enableRowSelection);
   console.log("aaa=" + table.options.manualPagination);
 
+# Tanstack-table pagination server-side로 구현하기
+
 https://geuni620.github.io/blog/2024/6/7/tanstack-table-server-side/
+
+# Server Side Pagination, Column Filtering and Sorting With TanStack Table and Query Library
 
 https://medium.com/@clee080/how-to-do-server-side-pagination-column-filtering-and-sorting-with-tanstack-react-table-and-react-7400a5604ff2
 

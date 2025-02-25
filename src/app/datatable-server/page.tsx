@@ -3,25 +3,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-import { columns } from "./components/columns";
-import { DataTable, DataTableHandle } from "./components/data-table";
-import { Task } from "./data/schema";
+import { columns, Payment } from "./columns";
+import { DataTable, DataTableHandle } from "@/components/custom/data-table/data-table";
 import { PageDtToolbarPropsToolbar } from "./page-dt-toolbar";
 import { Button } from "@/components/ui/button";
-import { fetchData, fetchData2 } from "./data/testdata";
-import { usePagination } from "./components/usePagination";
+import { fetchData1, fetchData2 } from "./test-data";
+import { usePagination } from "@/components/custom/data-table/usePagination";
 import { PaginationState, Updater } from "@tanstack/table-core";
 
 export default function TaskPage() {
   const tableRef = useRef<DataTableHandle>(null);
-  const [tableData, setTableData] = useState<Task[]>([]);
+  const [tableData, setTableData] = useState<Payment[]>([]);
   const [testPage, setTestPage] = useState<number>(1);
 
   const { pagination } = usePagination();
 
   useEffect(() => {
     async function loadData() {
-      const data = await fetchData();
+      const data = await fetchData1();
       setTableData(data);
       pagination.totalCount = data.length;
     }
@@ -55,7 +54,7 @@ export default function TaskPage() {
       console.log("aaa 111=", pagination.totalCount);
       setTableData(data);
     } else {
-      const data = await fetchData();
+      const data = await fetchData1();
       pagination.totalCount = data.length;
       console.log("aaa 222=", pagination.totalCount);
       setTableData(data);
@@ -72,7 +71,7 @@ export default function TaskPage() {
 
       setTestPage(2);
     } else {
-      const data = await fetchData();
+      const data = await fetchData1();
       pagination.totalCount = data.length;
       setTableData(data);
       setTestPage(1);
@@ -93,7 +92,7 @@ export default function TaskPage() {
         "tableState pageSize :" + tableState.pagination.pageSize.toString()
       );
 
-      const taskArray: Task[] = tableState.selectRows.rows.map(
+      const taskArray: Payment[] = tableState.selectRows.rows.map(
         (row) => row.original
       );
       console.log("Selected Rows:");

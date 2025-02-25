@@ -14,7 +14,7 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  //  getPaginationRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -55,12 +55,9 @@ interface DataTableProps<TData, TValue> {
     totalCount: number;
   };
   onPaginationChange?: (updaterOrValue: Updater<PaginationState>) => void;
-  //  onPaginationChange?: (pageIndex: number) => void;
-  //  onPageSizeChange?: (pageSize: number) => void;
   DataTableToolbar?: React.ComponentType<{ table: TanstackTable<TData> }>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DataTable = React.forwardRef<
   DataTableHandle,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,13 +73,6 @@ export const DataTable = React.forwardRef<
     const [columnFilters, setColumnFilters] =
       React.useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    /*
-  function onPaginationChange(updaterOrValue: Updater<PaginationState>) {
-    if (typeof updaterOrValue === "function") {
-    } else {
-    }
-  }
-*/
 
     const table = useReactTable({
       data,
@@ -104,13 +94,17 @@ export const DataTable = React.forwardRef<
       onColumnVisibilityChange: setColumnVisibility,
       getCoreRowModel: getCoreRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
-      //    getPaginationRowModel: getPaginationRowModel(),
-      manualPagination: true,
-      rowCount: pagination?.totalCount,
-      pageCount: Math.ceil(
-        (pagination?.totalCount ?? 0) / (pagination?.pageSize ?? 10)
-      ),
-      onPaginationChange,
+      // danyoh : 싱글 로우 선택
+      enableMultiRowSelection: false,
+      // pagination이 있을 때만 적용되는 설정들 ( 서버 사이드 페이징을 위한 설정 )
+      ...(pagination ? {
+        manualPagination: true,
+        rowCount: pagination.totalCount,
+        pageCount: Math.ceil(pagination.totalCount / pagination.pageSize),
+        onPaginationChange,
+      } : {
+        getPaginationRowModel: getPaginationRowModel(),
+      }),
       getSortedRowModel: getSortedRowModel(),
       getFacetedRowModel: getFacetedRowModel(),
       getFacetedUniqueValues: getFacetedUniqueValues(),

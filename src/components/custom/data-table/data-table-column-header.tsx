@@ -38,7 +38,8 @@ export function DataTableColumnHeader<TData, TValue>({
         size="sm"
         className="-ml-3 h-8 data-[state=open]:bg-accent"
         onClick={handleSort}
-        //  disabled={!column.getCanSort()}
+        // danyoh :  소팅이 없으면 제목이 흐려짐
+//        disabled={!column.getCanSort()}
       >
         <span className="font-bold text-base">{title}</span>
         {column.getCanSort() && (

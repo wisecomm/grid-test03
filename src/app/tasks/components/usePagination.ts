@@ -4,12 +4,14 @@ import { useState } from "react";
 export type Pagination = {
   pageIndex: number;
   pageSize: number;
+  totalCount: number;
 };
 
 export const usePagination = () => {
   const [pagination, setPagination] = useState<Pagination>({
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 10,
+    totalCount: 0,
   });
 
   const onPageSizeChange = (pageSize: number) => {

@@ -107,7 +107,7 @@ export function DataTablePagination<TData>({
             <Input
               value={pageInput}
               onChange={(e) => setPageInput(e.target.value)}
-              className="h-8 w-14"
+              className="h-8 w-14 placeholder:text-[12px]"
               placeholder="Page"
             />
             <Button

@@ -10,32 +10,70 @@ import { PageDtToolbarPropsToolbar } from "./page-dt-toolbar";
 import { Button } from "@/components/ui/button";
 import { fetchData, fetchData2 } from "./data/testdata";
 import { usePagination } from "./components/usePagination";
+import { PaginationState, Updater } from "@tanstack/table-core";
 
 export default function TaskPage() {
   const tableRef = useRef<DataTableHandle>(null);
   const [tableData, setTableData] = useState<Task[]>([]);
   const [testPage, setTestPage] = useState<number>(1);
 
-  const { pagination, onPaginationChange, onPageSizeChange } = usePagination();
+  const { pagination } = usePagination();
 
   useEffect(() => {
     async function loadData() {
       const data = await fetchData();
       setTableData(data);
+      pagination.totalCount = data.length;
     }
     loadData();
   }, []);
+
+  async function onPaginationChange(updaterOrValue: Updater<PaginationState>) {
+    if (typeof updaterOrValue === "function") {
+      // If it's a function updater
+      const newState = updaterOrValue({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+      });
+      console.log("New page index:", newState.pageIndex);
+      //      console.log("New page size:", newState.pageSize);
+      // Update your pagination state here
+      pagination.pageIndex = newState.pageIndex;
+      pagination.pageSize = newState.pageSize;
+    } else {
+      // If it's a direct value update
+      console.log("Direct page index:", updaterOrValue.pageIndex);
+      //      console.log("Direct page size:", updaterOrValue.pageSize);
+      // Update your pagination state here
+      pagination.pageIndex = updaterOrValue.pageIndex;
+      pagination.pageSize = updaterOrValue.pageSize;
+    }
+
+    if (pagination.pageIndex % 2 == 0) {
+      const data = await fetchData2();
+      pagination.totalCount = data.length * 2000;
+      console.log("aaa 111=", pagination.totalCount);
+      setTableData(data);
+    } else {
+      const data = await fetchData();
+      pagination.totalCount = data.length;
+      console.log("aaa 222=", pagination.totalCount);
+      setTableData(data);
+    }
+  }
 
   const handleSearch = async () => {
     console.log("22222:");
 
     if (testPage == 1) {
       const data = await fetchData2();
+      pagination.totalCount = data.length;
       setTableData(data);
 
       setTestPage(2);
     } else {
       const data = await fetchData();
+      pagination.totalCount = data.length;
       setTableData(data);
       setTestPage(1);
     }
@@ -94,7 +132,9 @@ export default function TaskPage() {
           ref={tableRef}
           DataTableToolbar={PageDtToolbarPropsToolbar}
           data={tableData}
+          columns={columns}
           pagination={pagination}
+          onPaginationChange={onPaginationChange}
         />
       </div>
     </>

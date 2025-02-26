@@ -79,10 +79,12 @@ export const DataTable = React.forwardRef<
         columnVisibility,
         rowSelection,
         columnFilters,
-        pagination: {
-          pageIndex: pagination?.pageIndex ?? 0,
-          pageSize: pagination?.pageSize ?? 10,
-        },
+        ...(pagination
+          ? {
+              pageIndex: pagination?.pageIndex ?? 0,
+              pageSize: pagination?.pageSize ?? 10,
+            }
+          : {}),
       },
       enableRowSelection: true,
       onRowSelectionChange: setRowSelection,

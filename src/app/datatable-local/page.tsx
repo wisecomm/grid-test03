@@ -80,9 +80,7 @@ export default function TaskPage() {
       </div>
       <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            테이블 서버 페이징
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">로컬 페이징</h2>
         </div>
         <Button onClick={handleSearch}>검색</Button>
         <DataTable

@@ -4,7 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import { columns, Payment } from "./columns";
-import { DataTable, DataTableHandle } from "@/components/custom/data-table/data-table";
+import {
+  DataTable,
+  DataTableHandle,
+} from "@/components/custom/data-table/data-table";
 import { PageDtToolbarPropsToolbar } from "./page-dt-toolbar";
 import { Button } from "@/components/ui/button";
 import { fetchData1, fetchData2 } from "./test-data";
@@ -14,10 +17,11 @@ import { PaginationState, Updater } from "@tanstack/table-core";
 export default function TaskPage() {
   const tableRef = useRef<DataTableHandle>(null);
   const [tableData, setTableData] = useState<Payment[]>([]);
-  const [testPage, setTestPage] = useState<number>(1);
 
-  const { pagination } = usePagination();
+  //
+  const pagination = usePagination();
 
+  // 폼로드 시 데이터 로드 ( 테스트 데이터 )
   useEffect(() => {
     async function loadData() {
       const data = await fetchData1();
@@ -27,30 +31,28 @@ export default function TaskPage() {
     loadData();
   }, []);
 
+  // 테이블 페이지 변경 이벤트 (서버에서 데이터 가져옴)
   async function onPaginationChange(updaterOrValue: Updater<PaginationState>) {
     if (typeof updaterOrValue === "function") {
-      // If it's a function updater
-      const newState = updaterOrValue({
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
-      });
-      console.log("New page index:", newState.pageIndex);
-      //      console.log("New page size:", newState.pageSize);
-      // Update your pagination state here
+      const newState = updaterOrValue(pagination);
+      //      console.log("New page index:", newState.pageIndex);
+
+      // 페이지 정보 샛팅
       pagination.pageIndex = newState.pageIndex;
       pagination.pageSize = newState.pageSize;
+      pagination.totalCount = 0;
     } else {
-      // If it's a direct value update
-      console.log("Direct page index:", updaterOrValue.pageIndex);
-      //      console.log("Direct page size:", updaterOrValue.pageSize);
-      // Update your pagination state here
+      //      console.log("Direct page index:", updaterOrValue.pageIndex);
+
+      // 페이지 정보 샛팅
       pagination.pageIndex = updaterOrValue.pageIndex;
       pagination.pageSize = updaterOrValue.pageSize;
+      pagination.totalCount = 0;
     }
 
     if (pagination.pageIndex % 2 == 0) {
       const data = await fetchData2();
-      pagination.totalCount = data.length * 2000;
+      pagination.totalCount = data.length * 1000;
       console.log("aaa 111=", pagination.totalCount);
       setTableData(data);
     } else {
@@ -61,23 +63,10 @@ export default function TaskPage() {
     }
   }
 
+  // 툴바 검색 버튼 클릭 이벤트
   const handleSearch = async () => {
-    console.log("22222:");
-
-    if (testPage == 1) {
-      const data = await fetchData2();
-      pagination.totalCount = data.length;
-      setTableData(data);
-
-      setTestPage(2);
-    } else {
-      const data = await fetchData1();
-      pagination.totalCount = data.length;
-      setTableData(data);
-      setTestPage(1);
-    }
     if (!tableRef.current) return;
-
+    // 테이블 상태 가져오기
     const tableState = tableRef.current.getTableState();
     try {
       const queryParams = new URLSearchParams();
@@ -92,6 +81,7 @@ export default function TaskPage() {
         "tableState pageSize :" + tableState.pagination.pageSize.toString()
       );
 
+      // 선택된 로우 정보 가져오기
       const taskArray: Payment[] = tableState.selectRows.rows.map(
         (row) => row.original
       );
@@ -99,6 +89,17 @@ export default function TaskPage() {
       taskArray.forEach((task, index) => {
         console.log(`Row ${index + 1}: ID=${task.id}, Title=${task.title}`);
       });
+
+      // 서버에서 데이터 가져오기
+      if (tableState.pagination.pageIndex % 2 == 0) {
+        const data = await fetchData1();
+        pagination.totalCount = data.length;
+        setTableData(data);
+      } else {
+        const data = await fetchData2();
+        pagination.totalCount = data.length;
+        setTableData(data);
+      }
     } catch (error) {
       console.error("Error fetching tasks1111:", error);
     }
@@ -124,7 +125,9 @@ export default function TaskPage() {
       </div>
       <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            테이블 서버 페이징
+          </h2>
         </div>
         <Button onClick={handleSearch}>검색</Button>
         <DataTable

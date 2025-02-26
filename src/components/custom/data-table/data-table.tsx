@@ -30,6 +30,7 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination";
 import { Table as TanstackTable } from "@tanstack/react-table";
+import { Pagination } from "./usePagination";
 
 export interface DataTableHandle {
   getTableState: () => {
@@ -49,11 +50,7 @@ export interface DataTableHandle {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  pagination?: {
-    pageSize: number;
-    pageIndex: number;
-    totalCount: number;
-  };
+  pagination?: Pagination;
   onPaginationChange?: (updaterOrValue: Updater<PaginationState>) => void;
   DataTableToolbar?: React.ComponentType<{ table: TanstackTable<TData> }>;
 }
@@ -97,14 +94,16 @@ export const DataTable = React.forwardRef<
       // danyoh : 싱글 로우 선택
       enableMultiRowSelection: false,
       // pagination이 있을 때만 적용되는 설정들 ( 서버 사이드 페이징을 위한 설정 )
-      ...(pagination ? {
-        manualPagination: true,
-        rowCount: pagination.totalCount,
-        pageCount: Math.ceil(pagination.totalCount / pagination.pageSize),
-        onPaginationChange,
-      } : {
-        getPaginationRowModel: getPaginationRowModel(),
-      }),
+      ...(pagination
+        ? {
+            manualPagination: true,
+            rowCount: pagination.totalCount,
+            pageCount: Math.ceil(pagination.totalCount / pagination.pageSize),
+            onPaginationChange,
+          }
+        : {
+            getPaginationRowModel: getPaginationRowModel(),
+          }),
       getSortedRowModel: getSortedRowModel(),
       getFacetedRowModel: getFacetedRowModel(),
       getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -134,7 +133,11 @@ export const DataTable = React.forwardRef<
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
+                      <TableHead
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        className="text-center border-x"
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -155,7 +158,7 @@ export const DataTable = React.forwardRef<
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="text-center border-x">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

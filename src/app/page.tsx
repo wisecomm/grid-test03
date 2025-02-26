@@ -19,8 +19,11 @@ export default function Home() {
       <Link href={"/table01"}>
         <h4>table01</h4>
       </Link>
-      <Link href={"/tasks"}>
-        <h4>Tasks 테이블 샘플</h4>
+      <Link href={"/datatable-local"}>
+        <h4>테이블 샘플(로컬)</h4>
+      </Link>
+      <Link href={"/datatable-server"}>
+        <h4>테이블 샘플(서버)</h4>
       </Link>
     </div>
   );
